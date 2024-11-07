@@ -285,7 +285,7 @@ const searchDogName = async (req, res) => {
   }
 
   const updatePromise = Dog.findOneAndUpdate({ name: req.query.name }, { $inc: { age: 1 } }, {
-    returnDocument: 'after'
+    returnDocument: 'after',
   }).lean().exec();
 
   updatePromise.then((doc) => res.json({
@@ -298,6 +298,8 @@ const searchDogName = async (req, res) => {
     console.log(err);
     return res.status(500).json({ error: 'something went wrong' });
   });
+
+  return null;
 };
 
 /* A function for updating the last cat added to the database.
