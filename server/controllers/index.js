@@ -284,19 +284,20 @@ const searchDogName = async (req, res) => {
     return res.status(400).json({ error: 'Name is required to perform a search' });
   }
 
-  let doc;
-  try {
-    doc = await Dog.findOne({ name: req.query.name }).exec();
-  } catch (err) {
+  const updatePromise = Dog.findOneAndUpdate({ name: req.query.name }, { $inc: { age: 1 } }, {
+    returnDocument: 'after'
+  }).lean().exec();
+
+  updatePromise.then((doc) => res.json({
+    name: doc.name,
+    breed: doc.breed,
+    age: doc.age,
+  }));
+
+  updatePromise.catch((err) => {
     console.log(err);
-    return res.status(500).json({ error: 'Something went wrong' });
-  }
-
-  if (!doc) {
-    return res.status(404).json({ error: 'No dogs found' });
-  }
-
-  return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
+    return res.status(500).json({ error: 'something went wrong' });
+  });
 };
 
 /* A function for updating the last cat added to the database.
