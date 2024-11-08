@@ -288,18 +288,22 @@ const searchDogName = async (req, res) => {
     returnDocument: 'after',
   }).lean().exec();
 
-  updatePromise.then((doc) => res.json({
-    name: doc.name,
-    breed: doc.breed,
-    age: doc.age,
-  }));
+  updatePromise.then((doc) => {
+    if (!doc) return res.status(400).json({ error: `Dog ${req.query.name} not found` });
+    
+    return res.json({
+      name: doc.name,
+      breed: doc.breed,
+      age: doc.age,
+    });
+  });
 
   updatePromise.catch((err) => {
     console.log(err);
     return res.status(500).json({ error: 'something went wrong' });
   });
 
-  return null;
+  return res.status(400);
 };
 
 /* A function for updating the last cat added to the database.
